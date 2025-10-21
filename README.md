@@ -2,8 +2,6 @@
 
 A modern, interactive web application designed for Clemson University students to explore historical grade distributions across courses, professors, and semesters.
 
-[![Deploy to GitHub Pages](https://github.com/groovymango3429/CuGradeHistory/actions/workflows/deploy.yml/badge.svg)](https://github.com/groovymango3429/CuGradeHistory/actions/workflows/deploy.yml)
-
 **Live Demo:** [https://groovymango3429.github.io/CuGradeHistory/](https://groovymango3429.github.io/CuGradeHistory/)
 
 ---
