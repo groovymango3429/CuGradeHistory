@@ -4,6 +4,7 @@ import SearchBar from './components/SearchBar';
 import FilterSection from './components/FilterSection';
 import CourseCard from './components/CourseCard';
 import Stats from './components/Stats';
+import Pagination from './components/Pagination';
 
 function App() {
   const [courses, setCourses] = useState([]);
@@ -13,6 +14,8 @@ function App() {
   const [selectedInstructor, setSelectedInstructor] = useState('');
   const [sortBy, setSortBy] = useState('course');
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(30);
 
   // Load course data
   useEffect(() => {
@@ -84,6 +87,7 @@ function App() {
     });
 
     setFilteredCourses(result);
+    setCurrentPage(1); // Reset to first page when filters change
   }, [searchTerm, selectedTerm, selectedInstructor, sortBy, courses]);
 
   const calculateAPercentage = (grades) => {
@@ -96,6 +100,22 @@ function App() {
     setSelectedTerm('');
     setSelectedInstructor('');
     setSortBy('course');
+  };
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCourses = filteredCourses.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredCourses.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleItemsPerPageChange = (value) => {
+    setItemsPerPage(value);
+    setCurrentPage(1);
   };
 
   return (
@@ -124,6 +144,9 @@ function App() {
         <Stats 
           totalCourses={courses.length}
           filteredCount={filteredCourses.length}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
         />
 
         {loading ? (
@@ -140,11 +163,21 @@ function App() {
             <p className="mt-2 text-gray-500">Try adjusting your search or filters</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCourses.map((course, index) => (
-              <CourseCard key={`${course.course_number}-${course.section}-${course.term}-${index}`} course={course} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentCourses.map((course, index) => (
+                <CourseCard key={`${course.course_number}-${course.section}-${course.term}-${index}`} course={course} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Pagination 
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            )}
+          </>
         )}
       </main>
 
